@@ -59,12 +59,12 @@ class Compra {
 public class LojaDeRoupas123 {
     private Map<String, Mercadoria> estoque;
     private List<Compra> historicoCompras;
-    private double lucroTotal;
+    private double ReceitaTotal;
 
     public LojaDeRoupas123() {
         estoque = new HashMap<>();
         historicoCompras = new ArrayList<>();
-        lucroTotal = 0.0;
+        ReceitaTotal = 0.0;
     }
 
     public void adicionarMercadoria(String nome, int quantidade, double valor) {
@@ -100,7 +100,7 @@ public class LojaDeRoupas123 {
         Compra compra = new Compra(nomeMercadoria, quantidade, valorTotal);
         historicoCompras.add(compra);
         mercadoria.setQuantidade(mercadoria.getQuantidade() - quantidade);
-        lucroTotal += valorTotal;
+        ReceitaTotal += valorTotal;
 
         System.out.println("Compra realizada com sucesso.");
         System.out.println("Valor total: " + valorTotal);
@@ -112,7 +112,7 @@ public class LojaDeRoupas123 {
         for (Compra compra : historicoCompras) {
           System.out.println("Nome: " + compra.getNomeMercadoria() + ", Quantidade: " + compra.getQuantidade() + ", Valor Total: " + compra.getValorTotal());
         }
-        System.out.println("Lucro Total: " + lucroTotal);
+        System.out.println("Receita Total: " + ReceitaTotal);
         System.out.println();
     }
 
