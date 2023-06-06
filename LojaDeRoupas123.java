@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 class Mercadoria {
@@ -33,18 +31,18 @@ class Mercadoria {
 }
 
 class Compra {
-    private String nomeMercadoria;
+    private Mercadoria mercadoria;
     private int quantidade;
     private double valorTotal;
 
-    public Compra(String nomeMercadoria, int quantidade, double valorTotal) {
-        this.nomeMercadoria = nomeMercadoria;
+    public Compra(Mercadoria mercadoria, int quantidade, double valorTotal) {
+        this.mercadoria = mercadoria;
         this.quantidade = quantidade;
         this.valorTotal = valorTotal;
     }
 
-    public String getNomeMercadoria() {
-        return nomeMercadoria;
+    public Mercadoria getMercadoria() {
+        return mercadoria;
     }
 
     public int getQuantidade() {
@@ -57,133 +55,124 @@ class Compra {
 }
 
 public class LojaDeRoupas123 {
-    private Map<String, Mercadoria> estoque;
+    private List<Mercadoria> estoque;
     private List<Compra> historicoCompras;
-    private double ReceitaTotal;
+    private double receitaTotal;
 
     public LojaDeRoupas123() {
-        estoque = new HashMap<>();
+        estoque = new ArrayList<>();
         historicoCompras = new ArrayList<>();
-        ReceitaTotal = 0.0;
+        receitaTotal = 0.0;
     }
 
     public void adicionarMercadoria(String nome, int quantidade, double valor) {
         Mercadoria mercadoria = new Mercadoria(nome, quantidade, valor);
-        estoque.put(nome, mercadoria);
+        estoque.add(mercadoria);
     }
 
-    public void removerMercadoria(String nome) {
-        estoque.remove(nome);
-    }
-
-    public void exibirEstoque() {
-        System.out.println("Estoque:");
-        for (Mercadoria mercadoria : estoque.values()) {
-            System.out.println("Nome: " + mercadoria.getNome() + ", Quantidade: " + mercadoria.getQuantidade() + ", Valor: " + mercadoria.getValor());
+    public int realizarCompra(int indiceMercadoria, int quantidade) {
+        if (indiceMercadoria >= 0 && indiceMercadoria < estoque.size()) {
+            Mercadoria mercadoria = estoque.get(indiceMercadoria);
+            if (quantidade <= mercadoria.getQuantidade()) {
+                double valorTotal = quantidade * mercadoria.getValor();
+                Compra compra = new Compra(mercadoria, quantidade, valorTotal);
+                historicoCompras.add(compra);
+                mercadoria.setQuantidade(mercadoria.getQuantidade() - quantidade);
+                receitaTotal += valorTotal;
+                return 0;   
+            } else {
+                return -2; 
+            }
+        } else {
+            return -1; 
         }
-        System.out.println();
-    }
-
-    public void realizarCompra(String nomeMercadoria, int quantidade) {
-        Mercadoria mercadoria = estoque.get(nomeMercadoria);
-        if (mercadoria == null) {
-            System.out.println("Mercadoria não encontrada no estoque.");
-            return;
-        }
-
-        if (quantidade > mercadoria.getQuantidade()) {
-            System.out.println("Quantidade indisponível no estoque.");
-            return;
-        }
-
-        double valorTotal = quantidade * mercadoria.getValor();
-        Compra compra = new Compra(nomeMercadoria, quantidade, valorTotal);
-        historicoCompras.add(compra);
-        mercadoria.setQuantidade(mercadoria.getQuantidade() - quantidade);
-        ReceitaTotal += valorTotal;
-
-        System.out.println("Compra realizada com sucesso.");
-        System.out.println("Valor total: " + valorTotal);
-        System.out.println();
-    }
-
-    public void exibirHistoricoCompras() {
-        System.out.println("Histórico de Compras:");
-        for (Compra compra : historicoCompras) {
-          System.out.println("Nome: " + compra.getNomeMercadoria() + ", Quantidade: " + compra.getQuantidade() + ", Valor Total: " + compra.getValorTotal());
-        }
-        System.out.println("Receita Total: " + ReceitaTotal);
-        System.out.println();
     }
 
     public static void main(String[] args) {
         LojaDeRoupas123 loja = new LojaDeRoupas123();
-        try (Scanner scanner = new Scanner(System.in)) {
-          while (true) {
-              System.out.println("Selecione uma opção:");
-              System.out.println("1. Adicionar mercadoria");
-              System.out.println("2. Remover mercadoria");
-              System.out.println("3. Exibir estoque");
-              System.out.println("4. Realizar compra");
-              System.out.println("5. Exibir histórico de compras");
-              System.out.println("0. Sair");
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("Selecione uma opção:");
+            System.out.println("1. Adicionar mercadoria");
+            System.out.println("2. Remover mercadoria");
+            System.out.println("3. Exibir estoque");
+            System.out.println("4. Realizar compra");
+            System.out.println("5. Exibir histórico de compras");
+            System.out.println("0. Sair");
 
-              int opcao = scanner.nextInt();
-              scanner.nextLine(); 
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
 
-              switch (opcao) {
-                  case 1:
-                      System.out.println("Digite o nome da mercadoria:");
-                      String nome = scanner.nextLine();
-                      System.out.println("Digite a quantidade da mercadoria:");
-                      int quantidade = scanner.nextInt();
-                      System.out.println("Digite o valor da mercadoria:");
-                      double valor = scanner.nextDouble();
-                      loja.adicionarMercadoria(nome, quantidade, valor);
-                      break;
-                  case 2:
-                      System.out.println("Digite o nome da mercadoria a ser removida:");
-                      nome = scanner.nextLine();
-                      loja.removerMercadoria(nome);
-                      break;
-                  case 3:
-                      loja.exibirEstoque();
-                      break;
-                  case 4:
-                      System.out.println("Selecione uma mercadoria para comprar:");
-                      int opcaoCompra = 1;
-                      int contador = 1;
-                      for (Mercadoria mercadoria : loja.estoque.values()) {
-                          System.out.println(contador + ". Nome: " + mercadoria.getNome() + ", Quantidade: " + mercadoria.getQuantidade() + ", Valor: " + mercadoria.getValor());
-                          contador++;
-                      }
-                      opcaoCompra = scanner.nextInt();
-                      scanner.nextLine(); 
+            switch (opcao) {
+                case 1:
+                    System.out.println("Digite o nome da mercadoria:");
+                    String nome = scanner.nextLine();
+                    System.out.println("Digite a quantidade da mercadoria:");
+                    int quantidade = scanner.nextInt();
+                    System.out.println("Digite o valor da mercadoria:");
+                    double valor = scanner.nextDouble();
+                    loja.adicionarMercadoria(nome, quantidade, valor);
+                    break;
+                case 2:
+                    System.out.println("Digite o índice da mercadoria a ser removida:");
+                    int indice = scanner.nextInt();
+                    scanner.nextLine();
 
-                      if (opcaoCompra < 1 || opcaoCompra > loja.estoque.size()) {
-                          System.out.println("Opção inválida.");
-                          break;
-                      }
+                    if (indice >= 0 && indice < loja.estoque.size()) {
+                        loja.estoque.remove(indice);
+                    } else {
+                        System.out.println("Índice inválido.");
+                    }
+                    break;
+                case 3:
+                    System.out.println("Estoque:");
+                    for (int i = 0; i < loja.estoque.size(); i++) {
+                        Mercadoria mercadoria = loja.estoque.get(i);
+                        System.out.println("Índice: " + i + ", Nome: " + mercadoria.getNome() + ", Quantidade: " + mercadoria.getQuantidade() + ", Valor: " + mercadoria.getValor());
+                    }
+                    System.out.println();
+                    break;
+                case 4:
+                    System.out.println("Selecione o índice da mercadoria para comprar:");
+                    System.out.println("Estoque:");
+                    for (int i = 0; i < loja.estoque.size(); i++) {
+                        Mercadoria mercadoria = loja.estoque.get(i);
+                        System.out.println("Índice: " + i + ", Nome: " + mercadoria.getNome() + ", Quantidade: " + mercadoria.getQuantidade() + ", Valor: " + mercadoria.getValor());
+                    }
+                    int indiceCompra = scanner.nextInt();
+                    scanner.nextLine();
 
-                      Mercadoria mercadoriaSelecionada = (Mercadoria) loja.estoque.values().toArray()[opcaoCompra - 1];
+                    System.out.println("Digite a quantidade da mercadoria a ser comprada:");
+                    int quantidadeCompra = scanner.nextInt();
+                    scanner.nextLine();
 
-                      System.out.println("Digite a quantidade da mercadoria a ser comprada:");
-                      quantidade = scanner.nextInt();
-                      scanner.nextLine(); 
-
-                      loja.realizarCompra(mercadoriaSelecionada.getNome(), quantidade);
-                      break;
-                  case 5:
-                      loja.exibirHistoricoCompras();
-                      break;
-                  case 0:
-                      System.exit(0);
-                      break;
-                  default:
-                      System.out.println("Opção inválida.");
-                      break;
-              }
-          }
+                    int resultadoCompra = loja.realizarCompra(indiceCompra, quantidadeCompra);
+                    if (resultadoCompra == -1) {
+                        System.out.println("Índice de mercadoria inválido.");
+                    } else if (resultadoCompra == -2) {
+                        System.out.println("Quantidade indisponível no estoque.");
+                    } else {
+                        System.out.println("Compra realizada com sucesso.");
+                        System.out.println("Valor total: " + loja.historicoCompras.get(loja.historicoCompras.size() - 1).getValorTotal());
+                    }
+                    break;
+                case 5:
+                    System.out.println("Histórico de Compras:");
+                    for (Compra compra : loja.historicoCompras) {
+                        Mercadoria mercadoria = compra.getMercadoria();
+                        System.out.println("Nome: " + mercadoria.getNome() + ", Quantidade: " + compra.getQuantidade() + ", Valor Total: " + compra.getValorTotal());
+                    }
+                    System.out.println("Receita Total: " + loja.receitaTotal);
+                    System.out.println();
+                    break;
+                case 0:
+                    scanner.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
+                    break;
+            }
         }
     }
 }
